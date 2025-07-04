@@ -297,15 +297,14 @@ def webhook_handler():
 
 @app.route('/set_webhook', methods=['GET'])
 def set_webhook():
-    """Esta ruta es para configurar el webhook la primera vez."""
-    # Vercel nos da la URL pública en una variable de entorno.
-    vercel_url = f'https://{os.getenv("VERCEL_URL")}'
-    # Le decimos a Telegram a dónde debe enviar los mensajes.
-    success = asyncio.run(application.bot.set_webhook(f'{vercel_url}/webhook'))
-    return "¡Webhook configurado exitosamente!" if success else "Error al configurar el webhook."
-
-@app.route('/')
-def index():
-    """Una ruta de prueba para saber que el bot está desplegado y vivo."""
-    return '¡El servidor del bot de Telegram está funcionando!'
-
+    """Configura el webhook de forma robusta usando la URL de la petición actual."""
+    # request.host_url nos da la URL base, ej: "https://mi-bot.vercel.app/"
+    webhook_url = f'{request.host_url}webhook'
+    print(f"--- Intentando configurar webhook a la URL: {webhook_url}")
+    
+    success = asyncio.run(application.bot.set_webhook(url=webhook_url))
+    
+    if success:
+        return f"¡Webhook configurado exitosamente a la URL: {webhook_url}!"
+    else:
+        return f"Error al configurar el webhook a la URL: {webhook_url}"
