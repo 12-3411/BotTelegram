@@ -284,12 +284,10 @@ application.add_handler(CallbackQueryHandler(manejar_callback_unificado))
 application.add_handler(MessageHandler(Filters.TEXT & ~Filters.COMMAND, recibir_mensaje))
 application.add_handler(MessageHandler(Filters.PHOTO, recibir_imagen))
 
-# 2. Definimos las rutas web que Vercel expondrá al mundo.
+# 2. Definimos las rutas web que Vercel expondrá
 @app.route('/webhook', methods=['POST'])
 def webhook_handler():
-    """Esta función se ejecuta cada vez que Telegram envía un mensaje."""
-    # Usamos asyncio.run() para ejecutar el código asíncrono de la librería
-    # desde el entorno síncrono de Flask.
+    """Se ejecuta cada vez que Telegram envía un mensaje."""
     asyncio.run(application.process_update(
         Update.de_json(request.get_json(force=True), application.bot)
     ))
@@ -297,15 +295,19 @@ def webhook_handler():
 
 @app.route('/set_webhook', methods=['GET'])
 def set_webhook():
-    """Esta ruta es para configurar el webhook la primera vez."""
-    # Vercel nos da la URL pública en una variable de entorno.
+    """Usa el método fiable para configurar el webhook."""
+    # os.getenv("VERCEL_URL") es el método que sabemos que funciona
     vercel_url = f'https://{os.getenv("VERCEL_URL")}'
-    # Le decimos a Telegram a dónde debe enviar los mensajes.
     success = asyncio.run(application.bot.set_webhook(f'{vercel_url}/webhook'))
     return "¡Webhook configurado exitosamente!" if success else "Error al configurar el webhook."
 
 @app.route('/')
 def index():
-    """Una ruta de prueba para saber que el bot está desplegado y vivo."""
+    """Ruta de prueba para saber que el bot está vivo."""
     return '¡El servidor del bot de Telegram está funcionando!'
+
+# Bloque final para poder probar localmente si es necesario
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
+
 
