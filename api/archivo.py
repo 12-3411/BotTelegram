@@ -2,6 +2,7 @@
 import os
 import json
 import asyncio
+import requests
 from flask import Flask, request
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
@@ -288,26 +289,38 @@ application.add_handler(MessageHandler(Filters.PHOTO, recibir_imagen))
 @app.route('/webhook', methods=['POST'])
 def webhook_handler():
     """Se ejecuta cada vez que Telegram envía un mensaje."""
-    asyncio.run(application.process_update(
-        Update.de_json(request.get_json(force=True), application.bot)
-    ))
+    # ¡AÑADIMOS UN PRINT DE DIAGNÓSTICO!
+    print("--- INFO: Petición /webhook recibida de Telegram.")
+    try:
+        # Procesamos la actualización de forma asíncrona
+        asyncio.run(application.process_update(
+            Update.de_json(request.get_json(force=True), application.bot)
+        ))
+    except Exception as e:
+        # Si algo falla aquí, lo veremos en los logs
+        print(f"--- ERROR: Fallo al procesar la actualización: {e}")
     return 'ok'
 
 @app.route('/set_webhook', methods=['GET'])
 def set_webhook():
-    """Usa el método fiable para configurar el webhook."""
-    # os.getenv("VERCEL_URL") es el método que sabemos que funciona
-    vercel_url = f'https://{os.getenv("VERCEL_URL")}'
-    success = asyncio.run(application.bot.set_webhook(f'{vercel_url}/webhook'))
-    return "¡Webhook configurado exitosamente!" if success else "Error al configurar el webhook."
+    """Usa el método más simple y directo para configurar el webhook."""
+    # Este método no usa la librería de telegram, sino una petición directa.
+    # Es menos propenso a errores de bucle de eventos.
+    webhook_url = f'https://{os.getenv("VERCEL_URL")}/webhook'
+    telegram_api_url = f'https://api.telegram.org/bot{TOKEN}/setWebhook?url={webhook_url}'
+    
+    print(f"--- INFO: Intentando configurar webhook con la URL: {telegram_api_url}")
+    
+    response = requests.get(telegram_api_url)
+    
+    if response.status_code == 200 and response.json().get('ok'):
+        print("--- SUCCESS: Webhook configurado correctamente.")
+        return f"¡Webhook configurado exitosamente a la URL: {webhook_url}!"
+    else:
+        print(f"--- ERROR: Fallo al configurar webhook. Respuesta de Telegram: {response.text}")
+        return f"Error al configurar webhook. Respuesta: {response.text}"
 
 @app.route('/')
 def index():
     """Ruta de prueba para saber que el bot está vivo."""
     return '¡El servidor del bot de Telegram está funcionando!'
-
-# Bloque final para poder probar localmente si es necesario
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
-
-
