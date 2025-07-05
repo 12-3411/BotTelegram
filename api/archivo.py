@@ -38,4 +38,4 @@ def set_webhook():
 
 @app.route("/")
 def index():
-    return "🟢 Bot funcionando"
+    return "🟢 Bot funcionando correctamente"
