@@ -14,6 +14,9 @@ from telegram.ext import (
     filters as Filters # Renombramos para evitar conflictos
 )
 import sys
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 from dotenv import load_dotenv
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -288,9 +291,7 @@ application.add_handler(MessageHandler(Filters.PHOTO, recibir_imagen))
 # 2. Definimos las rutas web que Vercel expondrá
 @app.route('/webhook', methods=['POST'])
 def webhook_handler():
-    """Se ejecuta cada vez que Telegram envía un mensaje."""
-    # ¡AÑADIMOS UN PRINT DE DIAGNÓSTICO!
-    print("--- INFO: Petición /webhook recibida de Telegram.")
+    logger.info("🔔 Recibida petición POST de Telegram.")
     try:
         # Procesamos la actualización de forma asíncrona
         asyncio.run(application.process_update(
