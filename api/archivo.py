@@ -292,16 +292,12 @@ application.add_handler(MessageHandler(Filters.PHOTO, recibir_imagen))
 # 2. Definimos las rutas web que Vercel expondrá
 @app.route('/webhook', methods=['POST'])
 def webhook_handler():
-    """Se ejecuta cada vez que Telegram envía un mensaje."""
-    # ¡AÑADIMOS UN PRINT DE DIAGNÓSTICO!
     print("--- INFO: Petición /webhook recibida de Telegram.")
     try:
-        # Procesamos la actualización de forma asíncrona
-        asyncio.run(application.process_update(
-            Update.de_json(request.get_json(force=True), application.bot)
-        ))
+        update_data = request.get_json(force=True)
+        update = Update.de_json(update_data, application.bot)
+        asyncio.get_event_loop().run_until_complete(application.process_update(update))
     except Exception as e:
-        # Si algo falla aquí, lo veremos en los logs
         print(f"--- ERROR: Fallo al procesar la actualización: {e}")
     return 'ok'
 
@@ -328,3 +324,4 @@ def set_webhook():
 def index():
     """Ruta de prueba para saber que el bot está vivo."""
     return '¡El servidor del bot de Telegram está funcionando!'
+app = app
