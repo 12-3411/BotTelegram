@@ -5,9 +5,21 @@
       "use": "@vercel/python"
     }
   ],
- "routes": [
-    { "src": "/webhook", "dest": "api/archivo.py" },
-    { "src": "/set_webhook", "dest": "api/archivo.py" },
-    { "src": "/", "dest": "api/archivo.py" }
+  "routes": [
+    {
+      "src": "/webhook",
+      "methods": ["POST"],
+      "dest": "api/archivo.py"
+    },
+    {
+      "src": "/set_webhook",
+      "methods": ["GET"],
+      "dest": "api/archivo.py"
+    },
+    {
+      "src": "/",
+      "methods": ["GET"],
+      "dest": "api/archivo.py"
+    }
   ]
 }
