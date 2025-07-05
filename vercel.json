@@ -5,10 +5,9 @@
       "use": "@vercel/python"
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "api/archivo.py"
-    }
+ "routes": [
+    { "src": "/webhook", "dest": "api/webhook.py" },
+    { "src": "/set_webhook", "dest": "api/webhook.py" },
+    { "src": "/", "dest": "api/webhook.py" }
   ]
 }
