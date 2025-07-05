@@ -6,8 +6,8 @@
     }
   ],
  "routes": [
-    { "src": "/webhook", "dest": "api/webhook.py" },
-    { "src": "/set_webhook", "dest": "api/webhook.py" },
-    { "src": "/", "dest": "api/webhook.py" }
+    { "src": "/webhook", "dest": "api/archivo.py" },
+    { "src": "/set_webhook", "dest": "api/archivo.py" },
+    { "src": "/", "dest": "api/archivo.py" }
   ]
 }
