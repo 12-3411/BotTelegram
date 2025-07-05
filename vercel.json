@@ -1,25 +1,13 @@
 {
   "builds": [
     {
-      "src": "api/archivo.py",
-      "use": "@vercel/python"
+      "src": "api/wsgi.py",
+      "use": "vercel-python-wsgi"
     }
   ],
   "routes": [
-    {
-      "src": "/webhook",
-      "methods": ["POST"],
-      "dest": "api/archivo.py"
-    },
-    {
-      "src": "/set_webhook",
-      "methods": ["GET"],
-      "dest": "api/archivo.py"
-    },
-    {
-      "src": "/",
-      "methods": ["GET"],
-      "dest": "api/archivo.py"
-    }
+    { "src": "/webhook", "methods": ["POST"], "dest": "api/wsgi.py" },
+    { "src": "/set_webhook", "methods": ["GET"], "dest": "api/wsgi.py" },
+    { "src": "/", "methods": ["GET"], "dest": "api/wsgi.py" }
   ]
 }
