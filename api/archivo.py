@@ -17,7 +17,7 @@ import sys
 import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.info("Servidor iniciado correctamente.")
+logger.info("Servidor iniciado correctamente Brrr.")
 from dotenv import load_dotenv
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
